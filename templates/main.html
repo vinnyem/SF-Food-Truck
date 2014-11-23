@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Uber Food Truck Map</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"> </script>
+        <link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.css" rel="stylesheet" media="screen">
+        
+    <style>
+      #map-canvas { height: 400px;
+      width: 100%}
+    
+    table {
+  border: 1px solid #666;   
+    width: 100%;
+}
+th {
+  background: #f8f8f8; 
+  font-weight: bold;    
+    padding: 2px;
+}
+</style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9pnoV8qKBZzllgw7suhI2bR1eP-tB98o">
+    </script>
+    <script type="text/javascript">
+      function initialize() {
+        var mapOptions = {
+          center: { lat: -34.397, lng: 150.644},
+          zoom: 8
+        };
+        var map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+      }
+      google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+    </head>
+
+<body>
+    <div id="map-canvas" class="col-md-6"></div>
+    <table id="foodTruckDataTable">
+    <tr>
+        <th>Business Name</th>
+        <th>Food Items</th>
+        <th>Location</th>
+        <th>Facility Type</th
+        
+    </tr>
+    
+</table>
+    <div id="map-canvas"></div>
+        
+
+        
+    <script type='text/javascript'>
+    function initialize(dat) {
+        console.log(dat);
+        
+        console.log(dat[0]);
+        var arrLen = dat.length;
+        for (var i = 0; i< arrLen; i++){
+            
+            var foodtruck = dat[i];
+           console.log(foodtruck['applicant']);
+            drawRow(foodtruck);
+        }
+    }
+        initialize({{ dat | tojson | safe}});
+        
+function drawRow(rowData) {
+    var row = $("<tr />")
+    console.log(rowData['applicant']);
+    $("#foodTruckDataTable").append(row);
+    var applicant = rowData['applicant'];
+    var str = '<a href="/mapper/" target="_blank">' + applicant + '</a>'
+    console.log(str);
+    var $t = $('<td>').html(str);
+    row.append($t);
+    row.append($("<td>" + rowData['fooditems'].replace(/:/g, ',') + "</td>"));
+    row.append($("<td>" + rowData['address'] + "</td>"));
+    row.append($("<td>" + rowData['facilitytype'] + "</td>"));
+}
+
+      // Create the map.
+        </script>
+    
+<div id="map-canvas"></div>
+<h2>
+    hello!
+    </h2>
+    <script type="text/javascript" src="display.js"></script>
+</body>
+</html>
