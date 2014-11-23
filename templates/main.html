@@ -63,7 +63,6 @@ th {
         for (var i = 0; i< arrLen; i++){
             
             var foodtruck = dat[i];
-           console.log(foodtruck['applicant']);
             drawRow(foodtruck);
         }
     }
@@ -71,10 +70,14 @@ th {
         
 function drawRow(rowData) {
     var row = $("<tr />")
-    console.log(rowData['applicant']);
+//    console.log(rowData['applicant']);
     $("#foodTruckDataTable").append(row);
     var applicant = rowData['applicant'];
-    var str = '<a href="/mapper/" target="_blank">' + applicant + '</a>'
+    var objectId = rowData['objectid'];
+    console.log(objectId);
+    var hlink = "mappers/" + objectId
+    console.log(hlink);
+    var str = '<a id="callFoodTruck" href=' + hlink +'>' + applicant + '</a>'
     console.log(str);
     var $t = $('<td>').html(str);
     row.append($t);
@@ -82,7 +85,7 @@ function drawRow(rowData) {
     row.append($("<td>" + rowData['address'] + "</td>"));
     row.append($("<td>" + rowData['facilitytype'] + "</td>"));
 }
-
+        
       // Create the map.
         </script>
     
