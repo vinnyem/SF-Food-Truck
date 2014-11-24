@@ -11,16 +11,26 @@
     <style>
       #map-canvas { height: 400px;
       width: 100%}
-    
-    table {
-  border: 1px solid #666;   
-    width: 100%;
-}
-th {
-  background: #f8f8f8; 
-  font-weight: bold;    
+        
+    #table {
+    border-collapse: collapse;
+        border-spacing: 0;
+	width:100%;
+	height:100%;
+	margin:0px;padding:0px;
+    }
+    th {
+    background: #FF6600; 
+    font-weight: bold;    
     padding: 2px;
 }
+        td {
+padding: 8px;
+  line-height: 20px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid #000000;
+        }
 </style>
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9pnoV8qKBZzllgw7suhI2bR1eP-tB98o">
@@ -66,7 +76,7 @@ th {
     </script>
     </head>
 
-<body>
+    <body>
     <div id="map-canvas" class="col-md-6"></div>
     <table id="foodTruckDataTable">
     <tr>
@@ -84,9 +94,9 @@ th {
         //Default Location - Pier 39
         var latitude = 37.8100;
         var longitude = -122.4104;
-        var applicant;
-        var address;
-        var fooditems;
+        var applicant = "PIER 39 - California Sea Lion Stand" ;
+        var address = "Pacific Ocean";
+        var fooditems = "Fish and Shrimps!";
     function initialize(dat) {
         var arrLen = dat.length;
         for (var i = 0; i< arrLen; i++){
@@ -95,97 +105,35 @@ th {
             drawRow(foodtruck);
         }
     }   
-        {% if dat %}
+        
         initialize({{ dat | tojson | safe}});
-         {% elif maploc %}
-         initializeLocation({{ maploc | tojson | safe}});
-         {% endif %}
-         
-    function initializeLocation(maploc) {
-         console.log("succes:"); 
-         setMarker(maploc);
-    }
-    
-    function setMarker(maploc){
-        var lat = parseFloat(maploc['latitude']);
-        var lng = parseFloat(maploc['longitude']);       
-        var businessName = maploc['applicant'];
-        var businessAddress = maploc['address'];
-        var foodTruckItems = maploc['fooditems'];
-        
-        if (isNaN(lat)){
-            latitude = latitude;
-        } 
-        else {
-            latitude = lat;
-        }
-        if (isNaN(lng)){
-            longitude = longitude;
-        }
-        else{
-            longitude = lng;
-        }
-        if (typeof businessName !== "undefined"){
-            applicant = businessName;
-        } 
-        if (typeof businessAddress !== "undefined"){
-            address = businessAddress;
-        } 
-        if (typeof foodTruckItems !== "undefined"){
-            fooditems = foodTruckItems;
-        } 
-       var myLatlng = new google.maps.LatLng(latitude, longitude);
-       var mapOptions = {
-        zoom: 10,
-        center: myLatlng
-        }
-        var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-        
-          
-        var marker = new google.maps.Marker({
-        position: myLatlng,
-        title:'Hello World!'
-        });
 
-// To add the marker to the map, call setMap();
-        marker.setMap(map);
-       
-        
-        
-  var contentString = '<div id="content">'+
-      '<div id="siteNotice">'+
-      '</div>'+
-      '<h1 id="firstHeading" class="firstHeading">'+ applicant +'</h1>'+
-      '<div id="bodyContent">'+
-      '<p>'+ address +'</p>'+
-      '<p>'+ fooditems.replace(/:/g, ',') +'</p>'+
-      '</div>'+
-      '</div>';
-
-  var infowindow = new google.maps.InfoWindow({
-      content: contentString
-  });
-        
-        
-    google.maps.event.addListener(marker, 'click', function() {
-    infowindow.open(map,marker);
-  });    
-        
-    }
-    google.maps.event.addDomListener(window, 'load', setMarker);
-    
+ 
 function drawRow(rowData) {
     var row = $("<tr />")
     $("#foodTruckDataTable").append(row);
     var applicant = rowData['applicant'];
     var objectId = rowData['objectid'];
+    var address = rowData['address'];
+    var fooditems = rowData['fooditems'];
     var hlink = "sfmobilefoodfacility/" + objectId
     var str = '<a id="callFoodTruck" href=' + hlink +'>' + applicant + '</a>'
     var $t = $('<td>').html(str);
+    var facilitytype = rowData['facilitytype'];
+    
+    if (typeof facilitytype === "undefined"){
+            facilitytype = "-";
+    }
+    if (typeof address === "undefined"){
+            address = "-";
+    } 
+    else {
+        address.replace(/:/g, ',')
+    }
     row.append($t);
-    row.append($("<td>" + rowData['fooditems'].replace(/:/g, ',') + "</td>"));
-    row.append($("<td>" + rowData['address'] + "</td>"));
-    row.append($("<td>" + rowData['facilitytype'] + "</td>"));
+    row.append($("<td>" + fooditems + "</td>"));
+    row.append($("<td>" + address + "</td>"));
+    row.append($("<td>" + facilitytype + "</td>"));
 }
         
       // Create the map.

@@ -11,7 +11,7 @@ json_data = "http://data.sfgov.org/resource/rqzj-sfat.json"
 @app.route('/')
 def home():
 	return redirect(url_for('mobile_food_facility'))
-    
+
 @app.route('/sfmobilefoodfacility', methods=['GET'])
 def mobile_food_facility():
     r = requests.get(json_data)
@@ -24,7 +24,7 @@ def mobile_food_facility():
 @app.route('/sfmobilefoodfacility/<string:applicantId>', methods=['GET'])
 def get_food_facility(applicantId):
     print applicantId
-    food_truck_data = []
+    data = []
     r = requests.get(json_data)
     locationdata = []
     dic = {}
@@ -39,11 +39,16 @@ def get_food_facility(applicantId):
             applicant = d.get('applicant')
             address = d.get('address')
             fooditems = d.get('fooditems')
+            if (address == None):
+                address = '-'
+            if (fooditems == None):
+                footitems = '-'
+            print address
             dic = {'latitude': latitude, 'longitude': longitude, 'applicant': applicant, 
                    'address': address, 'fooditems': fooditems}
             print dic
             break
-    return render_template('main.html', maploc = dic)
+    return render_template('main2.html', maploc = dic)
     
 @app.errorhandler(404)
 def page_not_found(error):

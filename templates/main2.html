@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Uber Food Truck Map</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"> </script>
+        <link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.css" rel="stylesheet" media="screen">
+        
+    <style>
+      #map-canvas { height: 800px;
+      width: 100%}
+    }
+    </style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9pnoV8qKBZzllgw7suhI2bR1eP-tB98o">
+    </script>
+        
+    <script type="text/javascript">
+      function initialize() {
+        var myLatlng = new google.maps.LatLng(37.8100, -122.4104);
+        var mapOptions = {
+          center: myLatlng,
+          zoom: 9
+        };
+          
+        var map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+          
+        var marker = new google.maps.Marker({
+        position: myLatlng,
+        title:'Hello Seals!',
+        visible: true
+        });
+        marker.setMap(map);
+          
+    google.maps.event.addListener(marker, 'click', function() {
+    infowindow.open(map,marker);
+    });    
+        
+      }
+      google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+    </head>
+
+    <body>
+    <div id="map-canvas" class="col-md-6"></div>
+    <div id="map-canvas"></div>
+        
+    <script type='text/javascript'>
+        //Default Location - Pier 39
+        var latitude = 37.8100;
+        var longitude = -122.4104;
+        var applicant;
+        var address;
+        var fooditems;
+    function initialize(dat) {
+        var arrLen = dat.length;
+        for (var i = 0; i< arrLen; i++){
+            
+            var foodtruck = dat[i];
+            drawRow(foodtruck);
+        }
+    }   
+
+    initializeLocation({{ maploc | tojson | safe}});
+         
+    function initializeLocation(maploc) {
+         setMarker(maploc);
+    }
+    
+    function setMarker(maploc){
+        var lat = parseFloat(maploc['latitude']);
+        var lng = parseFloat(maploc['longitude']);       
+        var businessName = maploc['applicant'];
+        var businessAddress = maploc['address'];
+        var foodTruckItems = maploc['fooditems'];
+        
+        if (isNaN(lat)){
+            latitude = latitude;
+        } 
+        else {
+            latitude = lat;
+        }
+        if (isNaN(lng)){
+            longitude = longitude;
+        }
+        else{
+            longitude = lng;
+        }
+        if (typeof businessName !== "undefined"){
+            applicant = businessName;
+        } 
+        if (typeof businessAddress !== "undefined"){
+            address = businessAddress;
+        } 
+        if (typeof foodTruckItems !== "undefined"){
+            fooditems = foodTruckItems;
+        } 
+       var myLatlng = new google.maps.LatLng(latitude, longitude);
+       var mapOptions = {
+        zoom: 10,
+        center: myLatlng
+        }
+        var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+        
+          
+        var marker = new google.maps.Marker({
+        position: myLatlng,
+        title:'Hello World!'
+        });
+
+// To add the marker to the map, call setMap();
+        marker.setMap(map);
+       
+        
+        
+  var contentString = '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h1 id="firstHeading" class="firstHeading">'+ applicant +'</h1>'+
+      '<div id="bodyContent">'+
+      '<p><b>'+ address +'</b></p>'+
+      '<p>'+ fooditems.replace(/:/g, ',') +'</p>'+
+      '</div>'+
+      '</div>';
+
+  var infowindow = new google.maps.InfoWindow({
+      content: contentString
+  });
+        
+        
+    google.maps.event.addListener(marker, 'click', function() {
+    infowindow.open(map,marker);
+  });    
+        
+    }
+    google.maps.event.addDomListener(window, 'load', setMarker);
+        
+      // Create the map.
+        </script>
+    <h1 class="text-center">San Francisco Mobile Food Facilty</h1> 
+        <h4 class="text-center">For once, you have options to choose from!</h4>
+ <img src="../static/img/crab.jpg" alt="Crab" class="img-circle">  
+ <img src="../static/img/sourdough1.jpg" alt="Sourdough" class="img-circle">
+ <img src="../static/img/dessert.jpg" alt="Strawberry" class="img-circle">
+ <img src="../static/img/burgers.jpg" alt="Burgers" class="img-circle">
+</body>
+</html>
