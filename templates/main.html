@@ -27,12 +27,40 @@ th {
     </script>
     <script type="text/javascript">
       function initialize() {
+        var myLatlng = new google.maps.LatLng(37.8100, -122.4104);
         var mapOptions = {
-          center: { lat: -34.397, lng: 150.644},
-          zoom: 8
+          center: myLatlng,
+          zoom: 9
         };
+          
         var map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
+          
+        var marker = new google.maps.Marker({
+        position: myLatlng,
+        title:'Hello Seals!',
+        visible: true
+        });
+        marker.setMap(map);
+          
+        var contentString = '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h1 id="firstHeading" class="firstHeading"> PIER 39 - California Sea Lion Stand </h1>'+
+      '<div id="bodyContent">'+
+      '<p> Pacific Ocean </p>'+
+      '<p> Fish and Shrimps! </p>'+
+      '</div>'+
+      '</div>';
+
+    var infowindow = new google.maps.InfoWindow({
+        content: contentString
+    });
+          
+    google.maps.event.addListener(marker, 'click', function() {
+    infowindow.open(map,marker);
+    });    
+        
       }
       google.maps.event.addDomListener(window, 'load', initialize);
     </script>
@@ -52,33 +80,107 @@ th {
 </table>
     <div id="map-canvas"></div>
         
-
-        
     <script type='text/javascript'>
+        //Default Location - Pier 39
+        var latitude = 37.8100;
+        var longitude = -122.4104;
+        var applicant;
+        var address;
+        var fooditems;
     function initialize(dat) {
-        console.log(dat);
-        
-        console.log(dat[0]);
         var arrLen = dat.length;
         for (var i = 0; i< arrLen; i++){
             
             var foodtruck = dat[i];
             drawRow(foodtruck);
         }
-    }
+    }   
+        {% if dat %}
         initialize({{ dat | tojson | safe}});
+         {% elif maploc %}
+         initializeLocation({{ maploc | tojson | safe}});
+         {% endif %}
+         
+    function initializeLocation(maploc) {
+         console.log("succes:"); 
+         setMarker(maploc);
+    }
+    
+    function setMarker(maploc){
+        var lat = parseFloat(maploc['latitude']);
+        var lng = parseFloat(maploc['longitude']);       
+        var businessName = maploc['applicant'];
+        var businessAddress = maploc['address'];
+        var foodTruckItems = maploc['fooditems'];
         
+        if (isNaN(lat)){
+            latitude = latitude;
+        } 
+        else {
+            latitude = lat;
+        }
+        if (isNaN(lng)){
+            longitude = longitude;
+        }
+        else{
+            longitude = lng;
+        }
+        if (typeof businessName !== "undefined"){
+            applicant = businessName;
+        } 
+        if (typeof businessAddress !== "undefined"){
+            address = businessAddress;
+        } 
+        if (typeof foodTruckItems !== "undefined"){
+            fooditems = foodTruckItems;
+        } 
+       var myLatlng = new google.maps.LatLng(latitude, longitude);
+       var mapOptions = {
+        zoom: 10,
+        center: myLatlng
+        }
+        var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+        
+          
+        var marker = new google.maps.Marker({
+        position: myLatlng,
+        title:'Hello World!'
+        });
+
+// To add the marker to the map, call setMap();
+        marker.setMap(map);
+       
+        
+        
+  var contentString = '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h1 id="firstHeading" class="firstHeading">'+ applicant +'</h1>'+
+      '<div id="bodyContent">'+
+      '<p>'+ address +'</p>'+
+      '<p>'+ fooditems.replace(/:/g, ',') +'</p>'+
+      '</div>'+
+      '</div>';
+
+  var infowindow = new google.maps.InfoWindow({
+      content: contentString
+  });
+        
+        
+    google.maps.event.addListener(marker, 'click', function() {
+    infowindow.open(map,marker);
+  });    
+        
+    }
+    google.maps.event.addDomListener(window, 'load', setMarker);
+    
 function drawRow(rowData) {
     var row = $("<tr />")
-//    console.log(rowData['applicant']);
     $("#foodTruckDataTable").append(row);
     var applicant = rowData['applicant'];
     var objectId = rowData['objectid'];
-    console.log(objectId);
-    var hlink = "mappers/" + objectId
-    console.log(hlink);
+    var hlink = "sfmobilefoodfacility/" + objectId
     var str = '<a id="callFoodTruck" href=' + hlink +'>' + applicant + '</a>'
-    console.log(str);
     var $t = $('<td>').html(str);
     row.append($t);
     row.append($("<td>" + rowData['fooditems'].replace(/:/g, ',') + "</td>"));
@@ -90,9 +192,5 @@ function drawRow(rowData) {
         </script>
     
 <div id="map-canvas"></div>
-<h2>
-    hello!
-    </h2>
-    <script type="text/javascript" src="display.js"></script>
 </body>
 </html>

@@ -4,53 +4,46 @@ import requests, json
 
 app = Flask(__name__)
 
+#Data given
 json_data = "http://data.sfgov.org/resource/rqzj-sfat.json"
+
+#Home
 @app.route('/')
 def home():
-	return render_template('home.html')
-#	return 'Hello World!!'
-
-@app.route('/welcome')
-def welcome():
-	return render_template('main.html')
-
-
-@app.route('/login', methods=['POST'])
-def login():
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
-            error = 'Invalid credentials'
-        else:
-            return redirect(url_for('home'))
-        return render_template('login.html', error=error)
+	return redirect(url_for('mobile_food_facility'))
     
-@app.route('/sumz', methods=['GET','POST'])
-def sumz():
-    if request.method == 'POST':
-        value_one = int(request.form['numberone'])
-        value_two = int(request.form['numbertwo'])
-        total = value_one + value_two
-#        data = {"total": str(total)}
-#        return jsonify(data)
-        return render_template('sum.html', value=total)
-    return render_template('sum.html')
-    
-@app.route('/sffoodtrucks', methods=['GET'])
-def sffoodtrucks():
+@app.route('/sfmobilefoodfacility', methods=['GET'])
+def mobile_food_facility():
     r = requests.get(json_data)
-    data = []
+    food_truck_data = []
     dic = {}
+    food_truck_data += json.loads(r.content)
+    return render_template('main.html', dat = food_truck_data)
+
+
+@app.route('/sfmobilefoodfacility/<string:applicantId>', methods=['GET'])
+def get_food_facility(applicantId):
+    print applicantId
+    food_truck_data = []
+    r = requests.get(json_data)
+    locationdata = []
+    dic = {}
+    dump = []
     data += json.loads(r.content)
     for d in data:
-        print d.get('address')
-        dic[d.get('applicant')] = d
         
-#    return Response(json.dumps(dic), mimetype='application/json')
-#    return render_template('main.html', res = jsonify(sffoodtrucks=dic))
-#    return render_template('main.html', sffoodtrucks=dic)
-    return render_template('main.html', dat = data)
-
+        objectId = d.get('objectid')
+        if applicantId == objectId:
+            latitude = d.get('latitude')
+            longitude = d.get('longitude')
+            applicant = d.get('applicant')
+            address = d.get('address')
+            fooditems = d.get('fooditems')
+            dic = {'latitude': latitude, 'longitude': longitude, 'applicant': applicant, 
+                   'address': address, 'fooditems': fooditems}
+            print dic
+            break
+    return render_template('main.html', maploc = dic)
     
 @app.errorhandler(404)
 def page_not_found(error):
