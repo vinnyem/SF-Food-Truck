@@ -282,8 +282,6 @@ a:focus {
   -webkit-border-radius: 50px;
      -moz-border-radius: 50px;
           border-radius: 50px;
-            padding: 5px;
-    
 }
 
 .row {
@@ -1083,7 +1081,7 @@ input,
 button,
 select,
 textarea {
-  font-size: 14px;
+  font-size: 250px;
   font-weight: normal;
   line-height: 20px;
 }
