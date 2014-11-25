@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, Response
+from flask import Flask, render_template, redirect, url_for
 import requests, json
 
 
 app = Flask(__name__)
 
 #Data given
-json_data = "http://data.sfgov.org/resource/rqzj-sfat.json"
+#json_data = "http://data.sfgov.org/resource/rqzj-sfat.json"
+json_file='./static/text/jsondata.json'
 
 #Home
 @app.route('/')
@@ -14,10 +15,11 @@ def home():
 
 @app.route('/sfmobilefoodfacility', methods=['GET'])
 def mobile_food_facility():
-    r = requests.get(json_data)
+#    r = requests.get(json_data)
     food_truck_data = []
-    dic = {}
-    food_truck_data += json.loads(r.content)
+    json_data=open(json_file)
+    food_truck_data = json.load(json_data)
+    json_data.close()
     return render_template('main.html', dat = food_truck_data)
 
 
@@ -25,13 +27,12 @@ def mobile_food_facility():
 def get_food_facility(applicantId):
     print applicantId
     data = []
-    r = requests.get(json_data)
-    locationdata = []
     dic = {}
-    dump = []
-    data += json.loads(r.content)
+    json_data=open(json_file)
+    data=json.load(json_data)
+    json_data.close()
     for d in data:
-        
+
         objectId = d.get('objectid')
         if applicantId == objectId:
             latitude = d.get('latitude')
@@ -42,14 +43,14 @@ def get_food_facility(applicantId):
             if (address == None):
                 address = '-'
             if (fooditems == None):
-                footitems = '-'
+                fooditems = '-'
             print address
-            dic = {'latitude': latitude, 'longitude': longitude, 'applicant': applicant, 
+            dic = {'latitude': latitude, 'longitude': longitude, 'applicant': applicant,
                    'address': address, 'fooditems': fooditems}
             print dic
             break
     return render_template('main2.html', maploc = dic)
-    
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('page_nf.html'), 404
@@ -57,4 +58,3 @@ def page_not_found(error):
 
 if __name__ == '__main__':
 	app.run(debug=True)
-    
